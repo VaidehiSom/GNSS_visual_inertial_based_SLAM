@@ -117,7 +117,7 @@ void update()
 bool
 getMeasurements(std::vector<sensor_msgs::ImuConstPtr> &imu_msg, sensor_msgs::PointCloudConstPtr &img_msg, std::vector<ObsPtr> &gnss_msg)
 {
-    if (imu_buf.empty() || feature_buf.empty() || (GNSS_ENABLE && gnss_meas_buf.empty()))
+    if (imu_buf.empty() || feature_buf.empty() || gnss_meas_buf.empty())
         return false;
     
     double front_feature_ts = feature_buf.front()->header.stamp.toSec();
@@ -136,27 +136,24 @@ getMeasurements(std::vector<sensor_msgs::ImuConstPtr> &imu_msg, sensor_msgs::Poi
         front_feature_ts = feature_buf.front()->header.stamp.toSec();
     }
 
-    if (GNSS_ENABLE)
+    front_feature_ts += time_diff_gnss_local;
+    double front_gnss_ts = time2sec(gnss_meas_buf.front()[0]->time);
+    while (!gnss_meas_buf.empty() && front_gnss_ts < front_feature_ts-MAX_GNSS_CAMERA_DELAY)
     {
-        front_feature_ts += time_diff_gnss_local;
-        double front_gnss_ts = time2sec(gnss_meas_buf.front()[0]->time);
-        while (!gnss_meas_buf.empty() && front_gnss_ts < front_feature_ts-MAX_GNSS_CAMERA_DELAY)
-        {
-            ROS_WARN("throw gnss, only should happen at the beginning");
-            gnss_meas_buf.pop();
-            if (gnss_meas_buf.empty()) return false;
-            front_gnss_ts = time2sec(gnss_meas_buf.front()[0]->time);
-        }
-        if (gnss_meas_buf.empty())
-        {
-            ROS_WARN("wait for gnss...");
-            return false;
-        }
-        else if (abs(front_gnss_ts-front_feature_ts) < MAX_GNSS_CAMERA_DELAY)
-        {
-            gnss_msg = gnss_meas_buf.front();
-            gnss_meas_buf.pop();
-        }
+        ROS_WARN("throw gnss, only should happen at the beginning");
+        gnss_meas_buf.pop();
+        if (gnss_meas_buf.empty()) return false;
+        front_gnss_ts = time2sec(gnss_meas_buf.front()[0]->time);
+    }
+    if (gnss_meas_buf.empty())
+    {
+        ROS_WARN("wait for gnss...");
+        return false;
+    }
+    else if (abs(front_gnss_ts-front_feature_ts) < MAX_GNSS_CAMERA_DELAY)
+    {
+        gnss_msg = gnss_meas_buf.front();
+        gnss_meas_buf.pop();
     }
 
     img_msg = feature_buf.front();
@@ -378,7 +375,7 @@ void process()
             }
         }
 
-        if (GNSS_ENABLE && !gnss_msg.empty())
+        if (!gnss_msg.empty())
             estimator_ptr->processGNSS(gnss_msg);
 
         ROS_DEBUG("processing vision data with stamp %f \n", img_msg->header.stamp.toSec());
@@ -437,7 +434,7 @@ int main(int argc, char **argv)
     ROS_DEBUG("EIGEN_DONT_PARALLELIZE");
 #endif
 
-    registerPub(n);
+    registerPub(n); // registering all publishers
 
     next_pulse_time_valid = false;
     time_diff_valid = false;
@@ -445,10 +442,7 @@ int main(int argc, char **argv)
     tmp_last_feature_time = -1;
     feature_msg_counter = 0;
 
-    if (GNSS_ENABLE)
-        skip_parameter = -1;
-    else
-        skip_parameter = 0;
+    skip_parameter = -1;
 
     ros::Subscriber sub_imu = n.subscribe(IMU_TOPIC, 2000, imu_callback, ros::TransportHints().tcpNoDelay());
     ros::Subscriber sub_feature = n.subscribe("/gvins_feature_tracker/feature", 2000, feature_callback);
@@ -456,27 +450,18 @@ int main(int argc, char **argv)
 
     ros::Subscriber sub_ephem, sub_glo_ephem, sub_gnss_meas, sub_gnss_iono_params;
     ros::Subscriber sub_gnss_time_pluse_info, sub_local_trigger_info;
-    if (GNSS_ENABLE)
-    {
-        sub_ephem = n.subscribe(GNSS_EPHEM_TOPIC, 100, gnss_ephem_callback);
-        sub_glo_ephem = n.subscribe(GNSS_GLO_EPHEM_TOPIC, 100, gnss_glo_ephem_callback);
-        sub_gnss_meas = n.subscribe(GNSS_MEAS_TOPIC, 100, gnss_meas_callback);
-        sub_gnss_iono_params = n.subscribe(GNSS_IONO_PARAMS_TOPIC, 100, gnss_iono_params_callback);
+    
+    sub_ephem = n.subscribe(GNSS_EPHEM_TOPIC, 100, gnss_ephem_callback);
+    sub_glo_ephem = n.subscribe(GNSS_GLO_EPHEM_TOPIC, 100, gnss_glo_ephem_callback);
+    sub_gnss_meas = n.subscribe(GNSS_MEAS_TOPIC, 100, gnss_meas_callback);
+    sub_gnss_iono_params = n.subscribe(GNSS_IONO_PARAMS_TOPIC, 100, gnss_iono_params_callback);
 
-        if (GNSS_LOCAL_ONLINE_SYNC)
-        {
-            sub_gnss_time_pluse_info = n.subscribe(GNSS_TP_INFO_TOPIC, 100, 
-                gnss_tp_info_callback);
-            sub_local_trigger_info = n.subscribe(LOCAL_TRIGGER_INFO_TOPIC, 100, 
-                local_trigger_info_callback);
-        }
-        else
-        {
-            time_diff_gnss_local = GNSS_LOCAL_TIME_DIFF;
-            estimator_ptr->inputGNSSTimeDiff(time_diff_gnss_local);
-            time_diff_valid = true;
-        }
-    }
+
+    // perform online synchronization betwen GNSS and local time
+    sub_gnss_time_pluse_info = n.subscribe(GNSS_TP_INFO_TOPIC, 100, 
+        gnss_tp_info_callback);
+    sub_local_trigger_info = n.subscribe(LOCAL_TRIGGER_INFO_TOPIC, 100, 
+        local_trigger_info_callback);
 
     std::thread measurement_process{process};
     ros::spin();

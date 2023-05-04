@@ -5,7 +5,7 @@ Estimator::Estimator(): f_manager{Rs}
     ROS_INFO("init begins");
     for (int i = 0; i < WINDOW_SIZE + 1; i++)
         pre_integrations[i] = nullptr;
-    clearState();
+    clearState(); // set all variables to zero, point all pntrs to null, clear all vectors
 }
 
 void Estimator::setParameter()
@@ -691,17 +691,16 @@ void Estimator::solveOdometry()
         f_manager.triangulate(Ps, tic, ric);
         ROS_DEBUG("triangulation costs %f", t_tri.toc());
         optimization();
-        if (GNSS_ENABLE)
+        
+        if (!gnss_ready)
         {
-            if (!gnss_ready)
-            {
-                gnss_ready = GNSSVIAlign();
-            }
-            if (gnss_ready)
-            {
-                updateGNSSStatistics();
-            }
+            gnss_ready = GNSSVIAlign();
         }
+        if (gnss_ready)
+        {
+            updateGNSSStatistics();
+        }
+        
     }
 }
 

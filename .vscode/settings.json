@@ -7,5 +7,8 @@
     "python.analysis.extraPaths": [
         "/home/vaidehi/Downloads/github/GNSS_visual_inertial_based_SLAM/devel/lib/python3/dist-packages",
         "/opt/ros/noetic/lib/python3/dist-packages"
-    ]
+    ],
+    "files.associations": {
+        "ostream": "cpp"
+    }
 }
