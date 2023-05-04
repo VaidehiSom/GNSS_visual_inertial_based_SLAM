@@ -1,0 +1,8 @@
+prefix=/home/vaidehi/Downloads/github/GNSS_visual_inertial_based_SLAM/install
+
+Name: gvins_camera_model
+Description: Description of gvins_camera_model
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib -lgvins_camera_model
+Requires: roscpp std_msgs

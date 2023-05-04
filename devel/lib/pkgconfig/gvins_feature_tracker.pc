@@ -1,0 +1,8 @@
+prefix=/home/vaidehi/Downloads/github/GNSS_visual_inertial_based_SLAM/devel
+
+Name: gvins_feature_tracker
+Description: Description of gvins_feature_tracker
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
