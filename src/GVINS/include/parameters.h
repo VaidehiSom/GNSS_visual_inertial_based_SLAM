@@ -8,6 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/eigen.hpp>
 #include <fstream>
+#include <opencv2/highgui/highgui.hpp>
 
 const double FOCAL_LENGTH = 460.0;
 const int WINDOW_SIZE = 10;
@@ -50,6 +51,26 @@ extern double GNSS_DOPP_STD_THRES;
 extern uint32_t GNSS_TRACK_NUM_THRES;
 extern double GNSS_DDT_WEIGHT;
 extern std::string GNSS_RESULT_PATH;
+
+extern int ROW;
+extern int COL;
+extern int FOCAL_LENGTH;
+const int NUM_OF_CAM = 1;
+
+extern std::string IMAGE_TOPIC;
+extern std::string IMU_TOPIC;
+extern std::string FISHEYE_MASK;
+extern std::vector<std::string> CAM_NAMES;
+extern int MAX_CNT;
+extern int MIN_DIST;
+extern int WINDOW_SIZE;
+extern int FREQ;
+extern double F_THRESHOLD;
+extern int SHOW_TRACK;
+extern int STEREO_TRACK;
+extern int EQUALIZE;
+extern int FISHEYE;
+extern bool PUB_THIS_FRAME;
 
 void readParameters(ros::NodeHandle &n);
 
