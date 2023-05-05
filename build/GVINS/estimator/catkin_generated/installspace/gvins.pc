@@ -1,8 +1,0 @@
-prefix=/home/vaidehi/Downloads/github/GNSS_visual_inertial_based_SLAM/install
-
-Name: gvins
-Description: Description of gvins
-Version: 1.0.0
-Cflags: -I${prefix}/include
-Libs: -L${prefix}/lib 
-Requires: 

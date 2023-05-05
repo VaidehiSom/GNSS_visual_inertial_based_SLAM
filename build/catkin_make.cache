@@ -1,2 +1,0 @@
-GVINS/camera_model:GVINS/estimator:GVINS/feature_tracker:gnss_comm
--DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_DEVEL_PREFIX=/home/vaidehi/Downloads/github/GNSS_visual_inertial_based_SLAM/devel -DCMAKE_INSTALL_PREFIX=/home/vaidehi/Downloads/github/GNSS_visual_inertial_based_SLAM/install -G Unix Makefiles

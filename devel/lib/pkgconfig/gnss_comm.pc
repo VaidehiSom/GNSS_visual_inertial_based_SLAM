@@ -1,8 +1,0 @@
-prefix=/home/vaidehi/Downloads/github/GNSS_visual_inertial_based_SLAM/devel
-
-Name: gnss_comm
-Description: Description of gnss_comm
-Version: 1.0.0
-Cflags: -I/home/vaidehi/Downloads/github/GNSS_visual_inertial_based_SLAM/devel/include -I/home/vaidehi/Downloads/github/GNSS_visual_inertial_based_SLAM/src/gnss_comm/include
-Libs: -L${prefix}/lib -lgnss_comm
-Requires: roscpp std_msgs message_generation
