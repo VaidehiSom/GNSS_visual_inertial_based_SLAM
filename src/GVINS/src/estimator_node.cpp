@@ -222,8 +222,6 @@ void gnss_meas_callback(const GnssMeasMsgConstPtr &meas_msg)
     std::vector<ObsPtr> gnss_meas = msg2meas(meas_msg);
 
     latest_gnss_time = time2sec(gnss_meas[0]->time);
-
-    // cerr << "gnss ts is " << std::setprecision(20) << time2sec(gnss_meas[0]->time) << endl;
     if (!time_diff_valid)   return;
 
     m_buf.lock();

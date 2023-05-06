@@ -511,56 +511,14 @@ CostFunctionFactory::generateCostFunction(const CameraConstPtr& camera,
     switch (flags)
     {
     case CAMERA_INTRINSICS | CAMERA_POSE:
-        switch (camera->modelType())
-        {
-        case Camera::KANNALA_BRANDT:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<EquidistantCamera>, 2, 8, 4, 3>(
-                new ReprojectionError1<EquidistantCamera>(observed_P, observed_p));
-            break;
-        case Camera::PINHOLE:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 8, 4, 3>(
-                new ReprojectionError1<PinholeCamera>(observed_P, observed_p));
-            break;
-        case Camera::MEI:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<CataCamera>, 2, 9, 4, 3>(
-                new ReprojectionError1<CataCamera>(observed_P, observed_p));
-            break;
-        case Camera::SCARAMUZZA:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ComprehensionError<OCAMCamera>, 4, SCARAMUZZA_CAMERA_NUM_PARAMS, 4, 3>(
-                new ComprehensionError<OCAMCamera>(observed_P, observed_p));
-                // new ceres::AutoDiffCostFunction<ReprojectionError1<OCAMCamera>, 2, SCARAMUZZA_CAMERA_NUM_PARAMS, 4, 3>(
-                // new ReprojectionError1<OCAMCamera>(observed_P, observed_p));
-            break;
-        }
+        costFunction =
+            new ceres::AutoDiffCostFunction<ReprojectionError1<CataCamera>, 2, 9, 4, 3>(
+            new ReprojectionError1<CataCamera>(observed_P, observed_p));
         break;
     case CAMERA_ODOMETRY_TRANSFORM | ODOMETRY_6D_POSE:
-        switch (camera->modelType())
-        {
-        case Camera::KANNALA_BRANDT:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<EquidistantCamera>, 2, 4, 3, 3, 3>(
-                new ReprojectionError1<EquidistantCamera>(intrinsic_params, observed_P, observed_p));
-            break;
-        case Camera::PINHOLE:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 4, 3, 3, 3>(
-                new ReprojectionError1<PinholeCamera>(intrinsic_params, observed_P, observed_p));
-            break;
-        case Camera::MEI:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<CataCamera>, 2, 4, 3, 3, 3>(
-                new ReprojectionError1<CataCamera>(intrinsic_params, observed_P, observed_p));
-            break;
-        case Camera::SCARAMUZZA:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<OCAMCamera>, 2, 4, 3, 3, 3>(
-                new ReprojectionError1<OCAMCamera>(intrinsic_params, observed_P, observed_p));
-            break;
-        }
+        costFunction =
+            new ceres::AutoDiffCostFunction<ReprojectionError1<CataCamera>, 2, 4, 3, 3, 3>(
+            new ReprojectionError1<CataCamera>(intrinsic_params, observed_P, observed_p));
         break;
     }
 
@@ -582,29 +540,10 @@ CostFunctionFactory::generateCostFunction(const CameraConstPtr& camera,
     switch (flags)
     {
     case CAMERA_INTRINSICS | CAMERA_POSE:
-        switch (camera->modelType())
-        {
-        case Camera::KANNALA_BRANDT:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<EquidistantCamera>, 2, 8, 4, 3>(
-                new ReprojectionError1<EquidistantCamera>(observed_P, observed_p, sqrtPrecisionMat));
-            break;
-        case Camera::PINHOLE:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<PinholeCamera>, 2, 8, 4, 3>(
-                new ReprojectionError1<PinholeCamera>(observed_P, observed_p, sqrtPrecisionMat));
-            break;
-        case Camera::MEI:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<CataCamera>, 2, 9, 4, 3>(
-                new ReprojectionError1<CataCamera>(observed_P, observed_p, sqrtPrecisionMat));
-            break;
-        case Camera::SCARAMUZZA:
-            costFunction =
-                new ceres::AutoDiffCostFunction<ReprojectionError1<OCAMCamera>, 2, SCARAMUZZA_CAMERA_NUM_PARAMS, 4, 3>(
-                new ReprojectionError1<OCAMCamera>(observed_P, observed_p, sqrtPrecisionMat));
-            break;
-        }
+
+        costFunction =
+            new ceres::AutoDiffCostFunction<ReprojectionError1<CataCamera>, 2, 9, 4, 3>(
+            new ReprojectionError1<CataCamera>(observed_P, observed_p, sqrtPrecisionMat));
         break;
     }
 

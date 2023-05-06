@@ -148,7 +148,6 @@ void FeatureManager::setDepth(const VectorXd &x)
             continue;
 
         it_per_id.estimated_depth = 1.0 / x(++feature_index);
-        //ROS_INFO("feature id %d , start_frame %d, depth %f ", it_per_id->feature_id, it_per_id-> start_frame, it_per_id->estimated_depth);
         if (it_per_id.estimated_depth < 0)
         {
             it_per_id.solve_flag = 2;
@@ -190,11 +189,7 @@ VectorXd FeatureManager::getDepthVector()
         it_per_id.used_num = it_per_id.feature_per_frame.size();
         if (!(it_per_id.used_num >= 2 && it_per_id.start_frame < WINDOW_SIZE - 2))
             continue;
-#if 1
         dep_vec(++feature_index) = 1. / it_per_id.estimated_depth;
-#else
-        dep_vec(++feature_index) = it_per_id->estimated_depth;
-#endif
     }
     return dep_vec;
 }
@@ -302,13 +297,6 @@ void FeatureManager::removeBackShiftDepth(Eigen::Matrix3d marg_R, Eigen::Vector3
                     it->estimated_depth = INIT_DEPTH;
             }
         }
-        // remove tracking-lost feature after marginalize
-        /*
-        if (it->endFrame() < WINDOW_SIZE - 1)
-        {
-            feature.erase(it);
-        }
-        */
     }
 }
 
@@ -368,9 +356,6 @@ double FeatureManager::compensatedParallax2(const FeaturePerId &it_per_id, int f
     Vector3d p_i = frame_i.point;
     Vector3d p_i_comp;
 
-    //int r_i = frame_count - 2;
-    //int r_j = frame_count - 1;
-    //p_i_comp = ric[camera_id_j].transpose() * Rs[r_j].transpose() * Rs[r_i] * ric[camera_id_i] * p_i;
     p_i_comp = p_i;
     double dep_i = p_i(2);
     double u_i = p_i(0) / dep_i;

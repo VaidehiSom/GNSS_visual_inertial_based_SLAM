@@ -20,24 +20,22 @@ find_package(catkin REQUIRED COMPONENTS
     )
 
 file(GLOB_RECURSE message_files ${PROJECT_SOURCE_DIR}/msg/*.msg)
-add_message_files(FILES 
-    GnssTimeMsg.msg
-    GnssEphemMsg.msg
-    GnssGloEphemMsg.msg
-    GnssMeasMsg.msg
-    GnssObsMsg.msg
-    GnssBestXYZMsg.msg
-    GnssPVTSolnMsg.msg
-    GnssSvsMsg.msg
-    GnssTimePulseInfoMsg.msg
-    StampedFloat64Array.msg
-)
 
 add_message_files(
   DIRECTORY msg
-  FILES LocalSensorExternalTrigger.msg
+  FILES 
+  LocalSensorExternalTrigger.msg
+  GnssTimeMsg.msg
+  GnssEphemMsg.msg
+  GnssGloEphemMsg.msg
+  GnssMeasMsg.msg
+  GnssObsMsg.msg
+  GnssBestXYZMsg.msg
+  GnssPVTSolnMsg.msg
+  GnssSvsMsg.msg
+  GnssTimePulseInfoMsg.msg
+  StampedFloat64Array.msg
 )
-
 
 generate_messages(DEPENDENCIES std_msgs)
 
